@@ -3,6 +3,8 @@ import numpy as np
 import tensorflow as tf 
 import os
 from load_data import get_all_time_series
+import optuna
+import matplotlib.pyplot as plt
 
 # %% load the data from user input
 print('Enter the path of CCSE COVID-19 repository:')
@@ -92,7 +94,6 @@ x_train = to_float_vec(np.array([infected[0:num_times],deaths[0:num_times]]).tra
 x_trains = to_float_vec(np.array([x_train]))
 
 # %% Solve for the initial parameters
-import optuna
 def objective(trial):
     beta = trial.suggest_uniform('beta', 0, 1)
     gamma = trial.suggest_uniform('gamma', 0, 1)
@@ -236,7 +237,6 @@ np_loss_history = []
 for loss in loss_history:
     np_loss_history.append(loss.numpy())
 
-import matplotlib.pyplot as plt
 ax = plt.gca()
 plt.plot(np.arange(0,len(np_loss_history),1),np_loss_history)
 
