@@ -2,9 +2,11 @@
 import numpy as np
 import tensorflow as tf 
 import os
-from load_data import get_all_time_series
 import optuna
 import matplotlib.pyplot as plt
+from load_data import get_all_time_series
+from load_data import to_float
+from load_data import to_float_vec
 
 # %% load the data from user input
 print('Enter the path of CCSE COVID-19 repository:')
@@ -52,36 +54,6 @@ while(True):
         continue
     else:
         break
-
-# %% define the SIRD solver
-def solve_SIRD_discrete(num_times,beta_t,gamma_t,mu_t,s0,i0,r0,d0):
-    S = []
-    I = []
-    R = []
-    D = []
-
-    S.append(s0)
-    I.append(i0)
-    R.append(r0)
-    D.append(d0)
-    num_times = len(beta_t)
-
-    for i in range(num_times-1):
-        Snew = S[i] - beta_t[i]/population * S[i]*I[i]
-        Inew = I[i] + beta_t[i]/population * S[i]*I[i] - gamma_t[i]*I[i] - mu_t[i]*I[i]
-        Rnew = R[i] + gamma_t[i]* I[i]
-        Dnew = D[i] + mu_t[i]* I[i]
-        S.append(Snew)
-        I.append(Inew)
-        R.append(Rnew)
-        D.append(Dnew)
-    return [S,I,R,D]
-
-#%% to_float
-def to_float(x):
-    return float(x)
-to_float_vec = np.vectorize(to_float)
-
 # %% Set the initial value for model
 i0 = to_float(infected[0])
 r0 = 0.
@@ -126,7 +98,7 @@ def objective(trial):
     #Ed1 = np.sum((np.log(Ic+epsilon)-np.log(I+epsilon))**2 + (np.log(Dc+epsilon)-np.log(D+epsilon))**2)
     #Ed2 = 0.01*(np.log(np.max(Ic)+epsilon)/np.max(Ic)) * np.sum((Ic-I)**2+ (Dc-D)**2)
     return np.sum((x_train[:,0][0:Regr]-I)**2) + 100*np.sum((x_train[:,1][0:Regr]-D)**2)
-
+#%%
 study = optuna.create_study()
 study.optimize(objective, n_trials=3000)
 study.best_params  # E.g. {'x': 2.002108042}

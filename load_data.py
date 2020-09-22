@@ -1,9 +1,15 @@
 #%% import needed packages
 import pandas as pd
 import glob,os
+import numpy as np
 
 # %% specify the CCSE github path
 #mypath = r'../COVID-19/csse_covid_19_data/csse_covid_19_time_series'
+
+#%% to_float
+def to_float(x):
+    return float(x)
+to_float_vec = np.vectorize(to_float)
 
 # %% define the function to load the .csv files
 def get_all_time_series(mypath):
