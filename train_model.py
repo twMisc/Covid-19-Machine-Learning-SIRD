@@ -17,10 +17,12 @@ while(True):
         mypath = input()
         if (mypath == ''):
             if os.name != 'nt':
-                mypath = r'../COVID-19/csse_covid_19_data/csse_covid_19_time_series'
+                mypath = r'../COVID-19/'
             else:
                 mypath = r'..\\COVID-19\\csse_covid_19_data\\csse_covid_19_time_series'
-        [df_infected,df_confirmed,df_recovered,df_deaths] = get_all_time_series(mypath)
+        subpath = r'csse_covid_19_data/csse_covid_19_time_series'
+        the_path = os.path.join(mypath,subpath)
+        [df_infected,df_confirmed,df_recovered,df_deaths] = get_all_time_series(the_path)
     except Exception:
         print('Path error, please re-enter:')
         continue
