@@ -235,8 +235,3 @@ plt.title('mu')
 plt.xlabel('Time [days]')
 plt.savefig(r'./img/' + mypath +'/mu.png')
 # %%
-import plotly.express as px
-df = px.data.iris()
-fig = px.line(df, x="sepal_width", y="sepal_length", color="species")
-fig.show()
-# %%
