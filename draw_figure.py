@@ -27,20 +27,13 @@ while(True):
     else:
         break
 #%% create df of needed information for each country
-import pandas as pd
-countries = ["US","Taiwan*"]
-populations = [327200000,23780000]
-Regrs = [70,100]
-dict = {"country": countries,  
-        "population": populations,
-        'Regr':Regrs
-        }
-df_information = pd.DataFrame(dict)
+from information import df_information
+print(df_information)
 
 # %% user input the country to train
 while(True):
     try:
-        country_code = input('Enter the country to train(Default=US):')
+        country_code = input('Enter the country to draw(Default=US):')
         if (country_code == ''):
             country_code = 'US'
         infected = df_infected[country_code].values
@@ -53,12 +46,21 @@ while(True):
         continue
     else:
         break
+
+#%% find start_time
+start_time = 0
+for i in infected:
+    if i!=0:
+        break
+    start_time = start_time+1
+
+    
 # %% Set the initial value for model
-i0 = to_float(infected[0])
+i0 = to_float(infected[start_time])
 r0 = 0.
 s0 = to_float(population) - i0
-d0 = to_float(deaths[0])
-
+d0 = to_float(deaths[start_time])
+#num_times = len(deaths)
 # %% load the trained model
 while(True):
     try:
@@ -70,12 +72,15 @@ while(True):
         continue
     else:
         break
+#%% make dir
+if not os.path.exists(r'./img/' + mypath):
+    os.makedirs(r'./img/' + mypath)
 # %% find the model num_times
 layer = model.layers[-1]
 num_times = layer.output_shape[1]
-
+end_time = start_time+num_times
 #%% Set the training data
-x_train = to_float_vec(np.array([infected[0:num_times],deaths[0:num_times]]).transpose())
+x_train = to_float_vec(np.array([infected[start_time:end_time],deaths[start_time:end_time]]).transpose())
 x_trains = to_float_vec(np.array([x_train]))
 # %% define the SIRD solver
 def solve_SIRD_discrete(num_times,beta_t,gamma_t,mu_t,s0,i0,r0,d0):
@@ -103,12 +108,10 @@ def solve_SIRD_discrete(num_times,beta_t,gamma_t,mu_t,s0,i0,r0,d0):
 
 # %% solve sird with trained model
 [Sr,Ir,Rr,Dr]= solve_SIRD_discrete(num_times,model.predict(x_trains)[0][:,0],model.predict(x_trains)[0][:,1],model.predict(x_trains)[0][:,2],s0,i0,r0,d0)
-
-
 # %% infected figure
 plt.figure()
 ##ax = fig.add_subplot(111)
-plt.plot(np.arange(num_times),infected/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
+plt.plot(np.arange(num_times),infected[start_time:end_time]/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
 plt.plot(np.arange(num_times),Ir/population, label = 'model')
 plt.legend()
 #plt.yscale('log')
@@ -121,7 +124,7 @@ plt.savefig(r'./img/' + mypath +'/infected.png')
 # %% draw infected difference figure 
 plt.figure()
 ###ax = fig.add_subplot(111)
-plt.plot(np.arange(num_times-1),np.diff(infected)/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
+plt.plot(np.arange(num_times-1),np.diff(infected[start_time:end_time])/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
 plt.plot(np.arange(num_times-1),np.diff(Ir)/population, label = 'model')
 plt.legend()
 #plt.yscale('log')
@@ -133,7 +136,7 @@ plt.savefig(r'./img/' + mypath +'/infected_diff.png')
 # %% deaths figure
 plt.figure()
 ###ax = fig.add_subplot(111)
-plt.plot(np.arange(num_times),deaths/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
+plt.plot(np.arange(num_times),deaths[start_time:end_time]/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
 plt.plot(np.arange(num_times),Dr/population, label = 'model')
 plt.legend()
 #plt.yscale('log')
@@ -147,7 +150,7 @@ plt.savefig(r'./img/' + mypath +'/deaths.png')
 # %% draw infected difference figure 
 plt.figure()
 ###ax = fig.add_subplot(111)
-plt.plot(np.arange(num_times-1),np.diff(deaths)/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
+plt.plot(np.arange(num_times-1),np.diff(deaths[start_time:end_time])/population,marker = 'x',markersize = '3',linewidth = 0.5,label='data')
 plt.plot(np.arange(num_times-1),np.diff(Dr)/population, label = 'model')
 plt.legend()
 #plt.yscale('log')
@@ -231,3 +234,9 @@ plt.legend()
 plt.title('mu')
 plt.xlabel('Time [days]')
 plt.savefig(r'./img/' + mypath +'/mu.png')
+# %%
+import plotly.express as px
+df = px.data.iris()
+fig = px.line(df, x="sepal_width", y="sepal_length", color="species")
+fig.show()
+# %%

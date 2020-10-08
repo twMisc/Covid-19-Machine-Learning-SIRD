@@ -30,15 +30,8 @@ while(True):
         break
 
 #%% create df of needed information for each country
-import pandas as pd
-countries = ["US","Taiwan*"]
-populations = [327200000,23780000]
-Regrs = [70,100]
-dict = {"country": countries,  
-        "population": populations,
-        'Regr':Regrs
-        }
-df_information = pd.DataFrame(dict)
+from information import df_information
+print(df_information)
 
 # %% user input the country to train
 while(True):
@@ -50,21 +43,37 @@ while(True):
         deaths = df_deaths[country_code].values
         recovered = df_recovered[country_code].values
         population = df_information[df_information.country==country_code].population.values[0]
-        Regr = df_information[df_information.country==country_code].Regr.values[0]
+        Regr = int(df_information[df_information.country==country_code].Regr.values[0])
     except Exception:
         print('Invalid country code, see country_list.txt for options.')
         continue
     else:
         break
+
+#%% find start_time
+start_time = 0
+for i in infected:
+    if i!=0:
+        break
+    start_time = start_time+1
+print(start_time)
+#%% enter end_time
+num_times  = int(input('Enter the days to train:'))
+end_time  = num_times + start_time 
+print(end_time)
 # %% Set the initial value for model
-i0 = to_float(infected[0])
+i0 = to_float(infected[start_time])
 r0 = 0.
 s0 = to_float(population) - i0
-d0 = to_float(deaths[0])
-num_times = len(deaths)
+d0 = to_float(deaths[start_time])
+#num_times = len(deaths)
+#%%
+infected = infected[start_time:end_time]
+deaths = deaths[start_time:end_time]
+recovered = recovered[start_time:end_time]
 
 #%% Set the training data
-x_train = to_float_vec(np.array([infected[0:num_times],deaths[0:num_times]]).transpose())
+x_train = to_float_vec(np.array([infected,deaths]).transpose())
 x_trains = to_float_vec(np.array([x_train]))
 
 # %% Solve for the initial parameters
