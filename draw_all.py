@@ -38,14 +38,14 @@ for country_code in countries:
     d0 = to_float(deaths[start_time])
     #num_times = len(deaths)
     # %% load the trained model
-    mypath = 'model_' + country_code + '_180'
+    mypath = './models/model_' + country_code + '_180'
     model= tf.keras.models.load_model(mypath)
     #%% make dir
     if os.name != 'nt':
         if not os.path.exists(r'./img/' + mypath):
             os.makedirs(r'./img/' + mypath)
-        elif not os.path.exists(r'.\\img\\' + mypath):
-            os.makedirs(r'.\\img\\' + mypath)
+    elif not os.path.exists(r'.\\img\\' + mypath):
+        os.makedirs(r'.\\img\\' + mypath)
     # %% find the model num_times
     layer = model.layers[-1]
     num_times = layer.output_shape[1]

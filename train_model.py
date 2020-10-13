@@ -235,4 +235,4 @@ plt.show()
 plt.savefig('loss_fn_'+country_code+'_'+str(num_times))
 
 # %% Save the model
-model.save('model_'+country_code+'_'+str(num_times))
+model.save('./models/model_'+country_code+'_'+str(num_times))
