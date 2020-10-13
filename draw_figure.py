@@ -16,9 +16,10 @@ while(True):
         if (mypath == ''):
             if os.name != 'nt':
                 mypath = r'../COVID-19/'
+                subpath = r'csse_covid_19_data/csse_covid_19_time_series'
             else:
-                mypath = r'..\\COVID-19\\csse_covid_19_data\\csse_covid_19_time_series'
-        subpath = r'csse_covid_19_data/csse_covid_19_time_series'
+                mypath = r'..\\COVID-19'
+                subpath = r'csse_covid_19_data\\csse_covid_19_time_series'
         the_path = os.path.join(mypath,subpath)
         [df_infected,df_confirmed,df_recovered,df_deaths] = get_all_time_series(the_path)
     except Exception:
@@ -67,14 +68,16 @@ while(True):
         mypath = input('Enter the folder of the trained model:')
         model= tf.keras.models.load_model(mypath)
     except Exception:
-        print('Path error, please re-enter:')\
-
+        print('Path error, please re-enter:')
         continue
     else:
         break
 #%% make dir
-if not os.path.exists(r'./img/' + mypath):
-    os.makedirs(r'./img/' + mypath)
+if os.name != 'nt':
+    if not os.path.exists(r'./img/' + mypath):
+        os.makedirs(r'./img/' + mypath)
+    elif not os.path.exists(r'.\\img\\' + mypath):
+        os.makedirs(r'.\\img\\' + mypath)
 # %% find the model num_times
 layer = model.layers[-1]
 num_times = layer.output_shape[1]

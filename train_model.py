@@ -1,4 +1,4 @@
-#%% imported need packages
+# %% imported need packages
 import numpy as np
 import tensorflow as tf 
 import os
@@ -18,9 +18,10 @@ while(True):
         if (mypath == ''):
             if os.name != 'nt':
                 mypath = r'../COVID-19/'
+                subpath = r'csse_covid_19_data/csse_covid_19_time_series'
             else:
-                mypath = r'..\\COVID-19\\csse_covid_19_data\\csse_covid_19_time_series'
-        subpath = r'csse_covid_19_data/csse_covid_19_time_series'
+                mypath = r'..\\COVID-19'
+                subpath = r'csse_covid_19_data\\csse_covid_19_time_series'
         the_path = os.path.join(mypath,subpath)
         [df_infected,df_confirmed,df_recovered,df_deaths] = get_all_time_series(the_path)
     except Exception:
@@ -29,7 +30,7 @@ while(True):
     else:
         break
 
-#%% create df of needed information for each country
+# %% create df of needed information for each country
 from information import df_information
 print(df_information)
 
@@ -50,14 +51,14 @@ while(True):
     else:
         break
 
-#%% find start_time
+# %% find start_time
 start_time = 0
 for i in infected:
     if i!=0:
         break
     start_time = start_time+1
 print(start_time)
-#%% enter end_time
+# %% enter end_time
 num_times  = int(input('Enter the days to train:'))
 end_time  = num_times + start_time 
 print(end_time)
@@ -67,12 +68,12 @@ r0 = 0.
 s0 = to_float(population) - i0
 d0 = to_float(deaths[start_time])
 #num_times = len(deaths)
-#%%
+# %%
 infected = infected[start_time:end_time]
 deaths = deaths[start_time:end_time]
 recovered = recovered[start_time:end_time]
 
-#%% Set the training data
+# %% Set the training data
 x_train = to_float_vec(np.array([infected,deaths]).transpose())
 x_trains = to_float_vec(np.array([x_train]))
 
@@ -109,7 +110,7 @@ def objective(trial):
     #Ed1 = np.sum((np.log(Ic+epsilon)-np.log(I+epsilon))**2 + (np.log(Dc+epsilon)-np.log(D+epsilon))**2)
     #Ed2 = 0.01*(np.log(np.max(Ic)+epsilon)/np.max(Ic)) * np.sum((Ic-I)**2+ (Dc-D)**2)
     return np.sum((x_train[:,0][0:Regr]-I)**2) + 100*np.sum((x_train[:,1][0:Regr]-D)**2)
-#%%
+# %%
 study = optuna.create_study()
 study.optimize(objective, n_trials=3000)
 study.best_params  # E.g. {'x': 2.002108042}
@@ -192,7 +193,7 @@ model.compile(optimizer=tf.keras.optimizers.Adam(0.012),
              )
 
 model.fit(x_trains,y_trues,verbose=1,epochs=2500)
-# %%  The training process
+# %% The training process
 tf.config.experimental_run_functions_eagerly(False)
 def train_step(x_trains, y_trues):
     with tf.GradientTape() as tape:
@@ -215,18 +216,23 @@ def train(epochs):
 loss_history = []
 optimizer = tf.keras.optimizers.Adam(learning_rate = 0.00005)
 loss_object = tf_loss_fn_us
-train(epochs =10000)
+train(epochs =20000)
+
+optimizer = tf.keras.optimizers.Adam(learning_rate = 0.00001)
+loss_object = tf_loss_fn_us
+train(epochs =20000)
 np_loss_history = []
 for loss in loss_history:
     np_loss_history.append(loss.numpy())
 
 ax = plt.gca()
-plt.plot(np.arange(0,len(np_loss_history),1),np_loss_history)
+plt.plot(np.arange(0,len(np_loss_history),1),np.log10(np_loss_history))
 
 ax.get_yaxis().get_major_formatter().set_useOffset(False)
 ax.get_yaxis().get_major_formatter().set_scientific(False)
+plt.ylabel('log(f)')
 plt.show()
 plt.savefig('loss_fn_'+country_code+'_'+str(num_times))
 
-#%% Save the model
+# %% Save the model
 model.save('model_'+country_code+'_'+str(num_times))
