@@ -199,7 +199,7 @@ for country_code in countries:
     # %% draw beta gamma mu
     plt.figure()
     ###ax = fig.add_subplot(111)
-    plt.plot(np.arange(num_times),model.predict(x_trains)[0][:,0],label = 'mu')
+    plt.plot(np.arange(num_times),model.predict(x_trains)[0][:,2],label = 'mu')
     #plt.plot(np.arange(num_times),model.predict(x_trains)[0][:,1],label = 'gamma')
     plt.legend()
     plt.title('mu')
