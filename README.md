@@ -19,3 +19,5 @@ Run compare_model.py to output a Plotly compare of parameters
 ./models contains some pretrained model
 ## html
 ./html contains some comparing results of models for different countries using Plotly, download and open with web browser
+## pdf
+./pdf contains a presentation file
