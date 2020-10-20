@@ -65,7 +65,11 @@ d0 = to_float(deaths[start_time])
 # %% load the trained model
 while(True):
     try:
-        mypath = input('Enter the folder of the trained model:')
+        mypath = input('Enter the folder of the trained model under ./models/:')
+        if os.name != 'nt':
+            mypath = os.path.join('./models',mypath)
+        else:
+            mypath = '.\\models\\' + mypath
         model= tf.keras.models.load_model(mypath)
     except Exception:
         print('Path error, please re-enter:')
