@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np 
 # %%
 import os 
-mypath = r'./COVID-19/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
+mypath = r'../COVID-19/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
 df = pd.read_csv(mypath)
 # %%
 S = set()
