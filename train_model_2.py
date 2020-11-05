@@ -243,7 +243,7 @@ for t in range(1,20):
 #optimizer = tf.keras.optimizers.Adam(learning_rate = 0.00001)
 #loss_object = tf_loss_fn_us
 #train(epochs =20000)
-#%%
+#%% the loss history
 np_loss_history = []
 for loss in loss_history:
     np_loss_history.append(loss.numpy())
@@ -255,10 +255,14 @@ plt.plot(np.arange(0,len(np_loss_history),1),np.log10(np_loss_history))
 #ax.get_yaxis().get_major_formatter().set_useOffset(False)
 #ax.get_yaxis().get_major_formatter().set_scientific(False)
 plt.ylabel('log(f)')
-plt.show()
-#plt.savefig('loss_fn_'+country_code+'_'+str(num_times))
-
+#plt.show()
+if os.name != 'nt':
+    if not os.path.exists(r'./img/' + mypath):
+        os.makedirs(r'./img/' + mypath)
+elif not os.path.exists(r'.\\img\\' + mypath):
+    os.makedirs(r'.\\img\\' + mypath)
+mypath = './models/model_' + country_code +'experiment' +'_180'
+plt.savefig('./img/' + mypath +'/loss_history.png')
 # %% Save the model
 model.save('./models/model_'+country_code+'experiment' + '_'+str(num_times))
-
 # %%
