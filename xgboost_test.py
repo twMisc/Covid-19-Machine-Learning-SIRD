@@ -27,7 +27,7 @@ for s in S:
     num_times = len(infected)
     # %% generate
     observe_days = 50
-    predict_days = 3
+    predict_days = 10
     days = observe_days + predict_days
 
     for i in range(num_times - days +1):
@@ -46,26 +46,23 @@ multioutputregressor = MultiOutputRegressor(xgb.XGBRegressor()).fit(x_train, y_t
 multioutputregressor.score(x_train,y_train)
 # %%
 multioutputregressor.score(x_test,y_test)
+#%%
+((multioutputregressor.predict(x_test) - y_test)**2).sum()
 # %%
-test_target = 11110
+test_target = 7777
 #multioutputregressor.predict(x_test)[test_target]
 # %%
 import matplotlib.pyplot as plt
-plt.plot(np.arange(observe_days),x_test[test_target][0:observe_days])
-plt.plot(np.arange(predict_days)+observe_days,y_test[test_target][0:predict_days])
-plt.plot(np.arange(predict_days)+observe_days,multioutputregressor.predict(x_test)[test_target][0:predict_days])
-
+plt.figure()
+plt.title('infected')
+plt.plot(np.arange(observe_days),x_test[test_target][0:observe_days],label='observe')
+plt.plot(np.arange(predict_days)+observe_days,y_test[test_target][0:predict_days],'-o',label='true')
+plt.plot(np.arange(predict_days)+observe_days,multioutputregressor.predict(x_test)[test_target][0:predict_days],'-o',label='predict')
+plt.legend()
 # %%
-plt.plot(np.arange(observe_days),x_test[test_target][observe_days:])
-plt.plot(np.arange(predict_days)+observe_days,y_test[test_target][predict_days:])
-plt.plot(np.arange(predict_days)+observe_days,multioutputregressor.predict(x_test)[test_target][predict_days:])
-
-
-#%%
-from sklearn.ensemble import RandomForestRegressor
-regr_multirf = MultiOutputRegressor(RandomForestRegressor()).fit(x_train,y_train)
-# %%
-regr_multirf.score(x_train,y_train)
-
-# %%
-regr_multirf.score(x_test,y_test)
+plt.figure()
+plt.title("deaths")
+plt.plot(np.arange(observe_days),x_test[test_target][observe_days:],label='observe')
+plt.plot(np.arange(predict_days)+observe_days,y_test[test_target][predict_days:],'-o',label='true')
+plt.plot(np.arange(predict_days)+observe_days,multioutputregressor.predict(x_test)[test_target][predict_days:],'-o',label='predict')
+plt.legend()
